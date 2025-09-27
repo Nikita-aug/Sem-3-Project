@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* -------- Variables -------- */
+        :root{
+            --bg: #e3f2fd;
+            --accent: #0d47a1;
+            --accent-2: #2196F3;
+            --card-bg: #ffffff;
+            --muted: #6b7b8a;
+            --radius: 10px;
+            --shadow: 0 6px 18px rgba(13,71,161,0.12);
+            --transition: 220ms cubic-bezier(.2,.9,.23,1);
+        }
+
+        /* Reset small things so stylesheet works well with inline styles */
+        html,body{height:100%;margin:0;padding:0}
+        a{color:var(--accent-2); text-decoration:none}
+
+        /* Background: subtle gradient + decorative SVG texture (embedded as data URI) */
+        body{
+            font-family: Arial, sans-serif;
+            /* layered background: decorative SVG texture on top of soft gradients */
+            background-color: var(--bg);
+            background-image:
+              radial-gradient(circle at 10% 20%, rgba(33,150,243,0.06), transparent 12%),
+              radial-gradient(circle at 90% 80%, rgba(13,71,161,0.04), transparent 14%),
+              url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1400' height='900' viewBox='0 0 1400 900'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%230d47a1' stop-opacity='0.06'/%3E%3Cstop offset='1' stop-color='%232196F3' stop-opacity='0.03'/%3E%3C/linearGradient%3E%3Cpattern id='p' width='60' height='60' patternUnits='userSpaceOnUse'%3E%3Crect width='60' height='60' fill='transparent'/%3E%3Cpath d='M0 60 L60 0 M-15 15 L15 -15 M45 75 L75 45' stroke='%23ffffff' stroke-opacity='0.03' stroke-width='2'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)'/%3E%3Crect width='100%25' height='100%25' fill='url(%23p)'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            color:#173c6b;
+        }
+
+        h1{
+            color: var(--accent);
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight:700;
+            letter-spacing:0.2px;
+            text-transform:uppercase;
+        }
+
+        /* style the card (form) without changing its size/layout */
+        form{
+            background-color: rgba(255,255,255,0.92);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 350px;
+            transition: transform var(--transition), box-shadow var(--transition);
+            border: 1px solid rgba(13,71,161,0.06);
+            backdrop-filter: blur(4px);
+        }
+
+        /* subtle lift on hover to feel interactive */
+        form:hover{ transform: translateY(-6px); box-shadow: 0 14px 36px rgba(13,71,161,0.14); }
+
+        h2{ text-align:center; color:#333; margin-bottom: 20px; font-size:20px }
+
+        label{ font-weight:600; color:#233646 }
+
+        select, input[type="email"], input[type="password"]{
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border: 1px solid #d6dde6;
+            background: linear-gradient(180deg, #fff, #fbfdff);
+            transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+            font-size:14px;
+            outline: none;
+        }
+
+        /* focus states to guide the user (no JS) */
+        select:focus, input[type="email"]:focus, input[type="password"]:focus{
+            box-shadow: 0 8px 26px rgba(33,150,243,0.08);
+            border-color: var(--accent-2);
+            transform: translateY(-2px);
+        }
+
+        /* placeholder emphasis */
+        input::placeholder{ color: #98a4b1; }
+
+        /* link area on the right */
+        .forgot{ font-size: 14px; text-align:right; margin-bottom:20px }
+        .forgot a{ color:var(--accent); font-weight:600 }
+        .forgot a:hover{ text-decoration:underline; color:var(--accent-2) }
+
+        /* primary button with subtle gradient and interactive states */
+        button[type="submit"]{
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(90deg,var(--accent), var(--accent-2));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
+            box-shadow: 0 8px 22px rgba(13,71,161,0.14);
+        }
+        button[type="submit"]:hover{ transform: translateY(-2px); box-shadow: 0 18px 40px rgba(13,71,161,0.16); }
+        button[type="submit"]:active{ transform: translateY(0); opacity:0.98 }
+
+        /* small text + register link */
+        .small{ text-align:center; margin-top:14px }
+        .small a{ font-weight:700 }
+
+        /* responsive tweaks (do not change layout) */
+        @media (max-width:420px){
+            form{ width: calc(100% - 40px); padding:22px }
+            h1{ font-size:18px }
+        }
+
+        /* accessibility: focus visible outline for keyboard users */
+        :focus-visible{ outline: none }
+        select:focus-visible, input:focus-visible, button:focus-visible{ box-shadow: 0 0 0 4px rgba(33,150,243,0.08); }
+
+        /* small decorative accent below the heading */
+        .accent-line{
+            width: 64px; height:4px; border-radius:4px; margin: 10px auto 18px; background: linear-gradient(90deg,var(--accent),var(--accent-2));
+        }
+
+        /* make the role select look nicer on desktop */
+        select{ appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 18px) calc(1em + 2px), calc(100% - 13px) calc(1em + 2px); background-size: 6px 6px, 6px 6px; background-repeat: no-repeat; padding-right: 36px; }
+
+    </style>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #e3f2fd; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0;">
+    <h1 style="color: #0d47a1; margin-bottom: 30px; text-align: center;">Online Leave Application for Student</h1>
+    <div class="accent-line" aria-hidden="true"></div>
+    <form method="POST" action="/login" style="background-color: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 350px;">
+        <h2 style="text-align:center; color: #333; margin-bottom: 20px;">Login</h2>
+        <label>Role:</label><br>
+        <select name="role" required style="width: 100%; padding: 8px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;">
+            <option value="student">Student</option>
+            <option value="faculty">Faculty</option>
+        </select><br>
+        <label>Email:</label><br>
+        <input type="email" name="email" required style="width: 100%; padding: 8px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc;" placeholder="you@college.edu"><br>
+        <label>Password:</label><br>
+        <input type="password" name="password" required style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;" placeholder="Enter your password"><br>
+        <!-- Forgot Password Link -->
+        <div class="forgot" style="text-align:right; margin-bottom: 20px;">
+            <a href="/forgot-password" style="text-decoration:none; color:#0d47a1; font-size: 14px;">Forgot Password?</a>
+        </div>
+        <button type="submit" style="width: 100%; padding: 10px; background-color: #0d47a1; color: white; border: none; border-radius: 5px; font-size: 16px;">Login</button><br><br>
+        <div class="small" style="text-align:center;">
+            <a href="/register" style="text-decoration:none; color:#2196F3;">Don't have an account? Register here</a>
+        </div>
+    </form>
+</body>
+</html>
