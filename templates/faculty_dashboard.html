@@ -5,43 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Faculty Dashboard</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #f4f6f9;
-      color: #2c3e50;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      color: #2c3e50;
+
+      /* 🌆 Background image with overlay gradient */
+      background: 
+        linear-gradient(rgba(44, 62, 80, 0.6), rgba(52, 152, 219, 0.6)),
+        url("{{ url_for('static', filename='images/faculty-bg.jpg') }}");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
     }
 
     header {
-      background: #34495e;
+      background: rgba(44, 62, 80, 0.9);
       color: #fff;
       text-align: center;
-      padding: 20px 0;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      padding: 25px 0;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
+      backdrop-filter: blur(6px);
     }
 
     header h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 600;
     }
 
-    .container {
+    main {
       flex: 1;
-      padding: 20px;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      overflow-x: auto;
+      margin-bottom: 40px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0px 6px 12px rgba(0,0,0,0.1);
-      border-radius: 8px;
+      background: rgba(255,255,255,0.9);
+      box-shadow: 0px 6px 12px rgba(0,0,0,0.2);
+      border-radius: 10px;
       overflow: hidden;
+      min-width: 800px;
+      backdrop-filter: blur(4px);
     }
 
     th, td {
@@ -59,7 +91,7 @@
     }
 
     tr:hover {
-      background: #f9f9f9;
+      background: rgba(236, 246, 255, 0.8);
     }
 
     .status.approved {
@@ -108,18 +140,40 @@
     }
 
     .link-box {
-      margin-top: 20px;
       text-align: center;
+      margin-bottom: 40px;
     }
 
     .link-box a {
       text-decoration: none;
+      background: #3498db;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
       font-weight: bold;
-      color: #3498db;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: background 0.3s ease, transform 0.2s ease;
     }
 
     .link-box a:hover {
-      text-decoration: underline;
+      background: #2980b9;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 700px) {
+      th, td {
+        font-size: 12px;
+        padding: 10px;
+      }
+
+      header h1 {
+        font-size: 20px;
+      }
+
+      .btn {
+        font-size: 12px;
+        padding: 5px 10px;
+      }
     }
   </style>
 </head>
@@ -128,45 +182,49 @@
     <h1>Faculty Dashboard - Leave Requests</h1>
   </header>
 
-  <main class="container">
-    <table>
-      <tr>
-        <th>ID</th>
-        <th>Student Name</th>
-        <th>Email</th>
-        <th>Days</th>
-        <th>Reason</th>
-        <th>Document</th>
-        <th>Status</th>
-        <th>Action</th>
-      </tr>
+  <main>
+    <h2>Welcome, {{ faculty_name }}</h2>
 
-      {% for leave in leaves %}
-      <tr>
-        <td>{{ leave.id }}</td>
-        <td>{{ leave.name }}</td>
-        <td>{{ leave.email }}</td>
-        <td>{{ leave.days }}</td>
-        <td>{{ leave.reason }}</td>
-        <td>
-          {% if leave.document %}
-          <a href="{{ url_for('static', filename='uploads/' ~ leave.document) }}" target="_blank">View</a>
-          {% else %}
-          None
-          {% endif %}
-        </td>
-        <td class="status {{ leave.status|lower }}">{{ leave.status }}</td>
-        <td>
-          <form method="POST" action="/approve/{{ leave.id }}" style="display:inline;">
-            <button class="btn approve">Approve</button>
-          </form>
-          <form method="POST" action="/reject/{{ leave.id }}" style="display:inline;">
-            <button class="btn reject">Reject</button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
+    <div class="container">
+      <table>
+        <tr>
+          <th>ID</th>
+          <th>Student Name</th>
+          <th>Email</th>
+          <th>Days</th>
+          <th>Reason</th>
+          <th>Document</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+
+        {% for leave in leaves %}
+        <tr>
+          <td>{{ leave.id }}</td>
+          <td>{{ leave.name }}</td>
+          <td>{{ leave.email }}</td>
+          <td>{{ leave.days }}</td>
+          <td>{{ leave.reason }}</td>
+          <td>
+            {% if leave.document %}
+              <a href="{{ url_for('static', filename='uploads/' ~ leave.document) }}" target="_blank">View</a>
+            {% else %}
+              None
+            {% endif %}
+          </td>
+          <td class="status {{ leave.status|lower }}">{{ leave.status }}</td>
+          <td>
+            <form method="POST" action="/approve/{{ leave.id }}" style="display:inline;" onsubmit="return confirm('Approve this leave?');">
+              <button class="btn approve">Approve</button>
+            </form>
+            <form method="POST" action="/reject/{{ leave.id }}" style="display:inline;" onsubmit="return confirm('Reject this leave?');">
+              <button class="btn reject">Reject</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
 
     <div class="link-box">
       <a href="{{ url_for('logout') }}">⬅ Logout</a>

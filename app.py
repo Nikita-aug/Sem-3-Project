@@ -59,8 +59,7 @@ def register():
         password = generate_password_hash(request.form['password'], method='pbkdf2:sha256')
         role = request.form['role']
 
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
+        if User.query.filter_by(email=email).first():
             flash("Email already exists!")
             return redirect(url_for('register'))
 
@@ -84,7 +83,7 @@ def login():
             session['user_id'] = user.id
             session['role'] = user.role
             session['name'] = user.name
-            
+
             if user.role.lower() == 'student':
                 return redirect(url_for('student_dashboard'))
             elif user.role.lower() == 'faculty':
@@ -121,45 +120,55 @@ def forgot_password():
 # -------- Student Dashboard --------
 @app.route('/student', methods=['GET', 'POST'])
 def student_dashboard():
-    if 'role' in session and session['role'].lower() == 'student':
-        if request.method == 'POST':
-            name = session['name']
-            user_email = User.query.get(session['user_id']).email
-            try:
-                days = int(request.form['days'])
-            except (ValueError, TypeError):
-                flash("Please enter a valid number for days.")
-                return redirect(url_for('student_dashboard'))
-            
-            reason = request.form['reason']
-            file = request.files.get('document')
-            filename = None
-            if file and file.filename:
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            
-            leave = Leave(student_id=session['user_id'], name=name, email=user_email,
-                          days=days, reason=reason, document=filename)
-            db.session.add(leave)
-            db.session.commit()
-            flash("Leave application submitted!")
-            return redirect(url_for('student_dashboard'))
-
-        leaves = Leave.query.filter_by(student_id=session['user_id']).all()
-        return render_template('student_dashboard.html', name=session['name'], leaves=leaves)
-    else:
+    if 'role' not in session or session['role'].lower() != 'student':
         flash("You are not authorized to view this page.")
         return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        name = session['name']
+        user_email = User.query.get(session['user_id']).email
+
+        try:
+            days = int(request.form['days'])
+        except (ValueError, TypeError):
+            flash("Please enter a valid number for days.")
+            return redirect(url_for('student_dashboard'))
+
+        reason = request.form['reason']
+        file = request.files.get('document')
+        filename = None
+        if file and file.filename:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        leave = Leave(student_id=session['user_id'], name=name, email=user_email,
+                      days=days, reason=reason, document=filename)
+        db.session.add(leave)
+        db.session.commit()
+        flash("Leave application submitted!")
+        return redirect(url_for('student_dashboard'))
+
+    return render_template('student_dashboard.html', name=session['name'])
+
+# -------- My Leave Status Page --------
+@app.route('/my-leaves')
+def my_leaves():
+    if 'role' not in session or session['role'].lower() != 'student':
+        flash("You are not authorized to view this page.")
+        return redirect(url_for('login'))
+
+    leaves = Leave.query.filter_by(student_id=session['user_id']).all()
+    return render_template('my_leaves.html', name=session['name'], leaves=leaves)
 
 # -------- Faculty Dashboard --------
 @app.route('/faculty')
 def faculty_dashboard():
-    if 'role' in session and session['role'].lower() == 'faculty':
-        leaves = Leave.query.all()
-        return render_template('faculty_dashboard.html', name=session['name'], leaves=leaves)
-    else:
+    if 'role' not in session or session['role'].lower() != 'faculty':
         flash("You are not authorized to view this page.")
         return redirect(url_for('login'))
+
+    leaves = Leave.query.all()
+    return render_template('faculty_dashboard.html', name=session['name'], leaves=leaves)
 
 # -------- Approve/Reject Leave with Email Handling --------
 def send_email(subject, recipient, body):
@@ -173,32 +182,34 @@ def send_email(subject, recipient, body):
 
 @app.route('/approve/<int:leave_id>', methods=['POST'])
 def approve_leave(leave_id):
-    if 'role' in session and session['role'].lower() == 'faculty':
-        leave = Leave.query.get(leave_id)
-        if leave:
-            leave.status = 'Approved'
-            db.session.commit()
-            flash("Leave approved successfully.")
-            body = f"Hello {leave.name},\n\nYour leave request for {leave.days} day(s) has been APPROVED.\n\nReason: {leave.reason}\n\nThank you."
-            if not send_email("Leave Approved", leave.email, body):
-                flash("Failed to send approval email. Check mail configuration.")
-    else:
+    if 'role' not in session or session['role'].lower() != 'faculty':
         flash("You are not authorized to perform this action.")
+        return redirect(url_for('login'))
+
+    leave = Leave.query.get(leave_id)
+    if leave:
+        leave.status = 'Approved'
+        db.session.commit()
+        flash("Leave approved successfully.")
+        body = f"Hello {leave.name},\n\nYour leave request for {leave.days} day(s) has been APPROVED.\n\nReason: {leave.reason}\n\nThank you."
+        if not send_email("Leave Approved", leave.email, body):
+            flash("Failed to send approval email. Check mail configuration.")
     return redirect(url_for('faculty_dashboard'))
 
 @app.route('/reject/<int:leave_id>', methods=['POST'])
 def reject_leave(leave_id):
-    if 'role' in session and session['role'].lower() == 'faculty':
-        leave = Leave.query.get(leave_id)
-        if leave:
-            leave.status = 'Rejected'
-            db.session.commit()
-            flash("Leave rejected.")
-            body = f"Hello {leave.name},\n\nYour leave request for {leave.days} day(s) has been REJECTED.\n\nReason: {leave.reason}\n\nPlease contact faculty for more details."
-            if not send_email("Leave Rejected", leave.email, body):
-                flash("Failed to send rejection email. Check mail configuration.")
-    else:
+    if 'role' not in session or session['role'].lower() != 'faculty':
         flash("You are not authorized to perform this action.")
+        return redirect(url_for('login'))
+
+    leave = Leave.query.get(leave_id)
+    if leave:
+        leave.status = 'Rejected'
+        db.session.commit()
+        flash("Leave rejected.")
+        body = f"Hello {leave.name},\n\nYour leave request for {leave.days} day(s) has been REJECTED.\n\nReason: {leave.reason}\n\nPlease contact faculty for more details."
+        if not send_email("Leave Rejected", leave.email, body):
+            flash("Failed to send rejection email. Check mail configuration.")
     return redirect(url_for('faculty_dashboard'))
 
 # -------- Logout --------
