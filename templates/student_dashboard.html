@@ -5,169 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Apply for Leave</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; overflow-x: hidden; font-family: "Segoe UI", Arial, sans-serif; background: linear-gradient(135deg, #74ebd5, #ACB6E5); }
+    body { display: flex; flex-direction: column; min-height: 100vh; position: relative; }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow-x: hidden;
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-    }
+    header { background: #2c3e50; color: #fff; text-align: center; padding: 30px 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 10; }
+    header h1 { margin: 0; font-size: 28px; font-weight: 600; }
 
-    body {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+    .container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; }
 
-    header {
-      background: #2c3e50;
-      color: #fff;
-      text-align: center;
-      padding: 30px 10px;
-      box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+    .form-box { background: #fff; padding: 30px 25px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0px 8px 20px rgba(0,0,0,0.15); animation: fadeIn 0.6s ease-in-out; }
+    label { font-weight: 600; display: block; margin-top: 15px; margin-bottom: 5px; color: #2c3e50; }
+    input, textarea { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; transition: border 0.3s ease; }
+    input:focus, textarea:focus { border-color: #3498db; outline: none; }
+    button { width: 100%; padding: 12px; background: #3498db; color: #fff; font-size: 16px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; transition: background 0.3s ease, transform 0.2s ease; }
+    button:hover { background: #2980b9; transform: scale(1.03); }
 
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 600;
-      line-height: 1.3;
-      word-wrap: break-word;
-    }
+    .link-box { margin-top: 20px; text-align: center; }
+    .link-box a, .status-link { text-decoration: none; font-weight: bold; color: #2c3e50; display: inline-block; margin-top: 10px; padding: 10px 20px; background: #fff; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease; }
+    .link-box a:hover, .status-link:hover { color: #fff; background: #3498db; transform: scale(1.03); }
 
-    .container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 40px 20px;
-    }
-
-    .form-box {
-      background: #fff;
-      padding: 30px 25px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
-      animation: fadeIn 0.6s ease-in-out;
-    }
-
-    label {
-      font-weight: 600;
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 5px;
-      color: #2c3e50;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-      transition: border 0.3s ease;
-    }
-
-    input:focus, textarea:focus {
-      border-color: #3498db;
-      outline: none;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #3498db;
-      color: #fff;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      background: #2980b9;
-      transform: scale(1.03);
-    }
-
-    .link-box {
-      margin-top: 20px;
-      text-align: center;
-    }
-
-    .link-box a, .status-link {
-      text-decoration: none;
-      font-weight: bold;
-      color: #2c3e50;
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: #fff;
-      border-radius: 6px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
-    }
-
-    .link-box a:hover, .status-link:hover {
-      color: #fff;
-      background: #3498db;
-      transform: scale(1.03);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ---- File upload custom style ---- */
-    input[type="file"] {
-      display: none;
-    }
+    input[type="file"] { display: none; }
+    .file-label { display: inline-block; padding: 10px 16px; background: linear-gradient(90deg, #3498db, #2b86c9); color: #fff; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; box-shadow: 0 6px 16px rgba(43,134,201,0.15); margin-bottom: 10px; transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease; }
+    .file-label:hover { background: linear-gradient(90deg, #2980b9, #2274a5); transform: translateY(-2px); box-shadow: 0 10px 24px rgba(43,134,201,0.2); }
+    .file-label:active { transform: translateY(0); box-shadow: 0 4px 12px rgba(43,134,201,0.15); }
 
-    .file-label {
-      display: inline-block;
-      padding: 10px 16px;
-      background: linear-gradient(90deg, #3498db, #2b86c9);
-      color: #fff;
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      box-shadow: 0 6px 16px rgba(43,134,201,0.15);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
-      margin-bottom: 10px;
-    }
-
-    .file-label:hover {
-      background: linear-gradient(90deg, #2980b9, #2274a5);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(43,134,201,0.2);
-    }
-
-    .file-label:active {
-      transform: translateY(0);
-      box-shadow: 0 4px 12px rgba(43,134,201,0.15);
-    }
+    /* --- Flash Messages --- */
+    .flash-messages { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+    .flash-message { padding: 12px 20px; margin-bottom: 10px; border-radius: 6px; color: #fff; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.1); animation: slideIn 0.5s ease, fadeOut 0.5s ease 3s forwards; }
+    .flash-success { background-color: #4CAF50; }
+    .flash-error { background-color: #f44336; }
+    .flash-info { background-color: #2196F3; }
+    .flash-warning { background-color: #ff9800; }
+    @keyframes slideIn { from {opacity:0; transform: translateX(50px);} to {opacity:1; transform: translateX(0);} }
+    @keyframes fadeOut { to {opacity:0; transform: translateX(50px);} }
   </style>
 </head>
 <body>
   <header>
     <h1>Apply for Leave</h1>
   </header>
+
+  <!-- Flash messages -->
+  <div class="flash-messages">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
 
   <main class="container">
     <form method="POST" enctype="multipart/form-data" class="form-box">

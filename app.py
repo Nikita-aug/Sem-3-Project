@@ -60,13 +60,13 @@ def register():
         role = request.form['role']
 
         if User.query.filter_by(email=email).first():
-            flash("Email already exists!")
+            flash("Email already exists!", "error")
             return redirect(url_for('register'))
 
         new_user = User(name=name, email=email, password=password, role=role)
         db.session.add(new_user)
         db.session.commit()
-        flash("Registration successful! Please login.")
+        flash("Registration successful! Please login.", "success")
         return redirect(url_for('login'))
     return render_template('register.html')
 
@@ -85,11 +85,13 @@ def login():
             session['name'] = user.name
 
             if user.role.lower() == 'student':
+                flash(f"Welcome, {user.name}!", "success")
                 return redirect(url_for('student_dashboard'))
             elif user.role.lower() == 'faculty':
+                flash(f"Welcome, {user.name}!", "success")
                 return redirect(url_for('faculty_dashboard'))
         else:
-            flash("Invalid email, password, or role!")
+            flash("Invalid email, password, or role!", "error")
             return redirect(url_for('login'))
     return render_template('login.html')
 
@@ -103,16 +105,16 @@ def forgot_password():
 
         user = User.query.filter_by(email=email).first()
         if not user:
-            flash("Email not found!")
+            flash("Email not found!", "error")
             return redirect(url_for('forgot_password'))
 
         if new_password != confirm_password:
-            flash("Passwords do not match!")
+            flash("Passwords do not match!", "error")
             return redirect(url_for('forgot_password'))
 
         user.password = generate_password_hash(new_password, method='pbkdf2:sha256')
         db.session.commit()
-        flash("Password reset successful! Please login.")
+        flash("Password reset successful! Please login.", "success")
         return redirect(url_for('login'))
 
     return render_template('forgot_password.html')
@@ -121,7 +123,7 @@ def forgot_password():
 @app.route('/student', methods=['GET', 'POST'])
 def student_dashboard():
     if 'role' not in session or session['role'].lower() != 'student':
-        flash("You are not authorized to view this page.")
+        flash("You are not authorized to view this page.", "error")
         return redirect(url_for('login'))
 
     if request.method == 'POST':
@@ -131,7 +133,7 @@ def student_dashboard():
         try:
             days = int(request.form['days'])
         except (ValueError, TypeError):
-            flash("Please enter a valid number for days.")
+            flash("Please enter a valid number for days.", "error")
             return redirect(url_for('student_dashboard'))
 
         reason = request.form['reason']
@@ -145,7 +147,7 @@ def student_dashboard():
                       days=days, reason=reason, document=filename)
         db.session.add(leave)
         db.session.commit()
-        flash("Leave application submitted!")
+        flash("Leave application submitted!", "success")
         return redirect(url_for('student_dashboard'))
 
     return render_template('student_dashboard.html', name=session['name'])
@@ -154,7 +156,7 @@ def student_dashboard():
 @app.route('/my-leaves')
 def my_leaves():
     if 'role' not in session or session['role'].lower() != 'student':
-        flash("You are not authorized to view this page.")
+        flash("You are not authorized to view this page.", "error")
         return redirect(url_for('login'))
 
     leaves = Leave.query.filter_by(student_id=session['user_id']).all()
@@ -164,7 +166,7 @@ def my_leaves():
 @app.route('/faculty')
 def faculty_dashboard():
     if 'role' not in session or session['role'].lower() != 'faculty':
-        flash("You are not authorized to view this page.")
+        flash("You are not authorized to view this page.", "error")
         return redirect(url_for('login'))
 
     leaves = Leave.query.all()
@@ -183,40 +185,40 @@ def send_email(subject, recipient, body):
 @app.route('/approve/<int:leave_id>', methods=['POST'])
 def approve_leave(leave_id):
     if 'role' not in session or session['role'].lower() != 'faculty':
-        flash("You are not authorized to perform this action.")
+        flash("You are not authorized to perform this action.", "error")
         return redirect(url_for('login'))
 
     leave = Leave.query.get(leave_id)
     if leave:
         leave.status = 'Approved'
         db.session.commit()
-        flash("Leave approved successfully.")
+        flash("Leave approved successfully.", "success")
         body = f"Hello {leave.name},\n\nYour leave request for {leave.days} day(s) has been APPROVED.\n\nReason: {leave.reason}\n\nThank you."
         if not send_email("Leave Approved", leave.email, body):
-            flash("Failed to send approval email. Check mail configuration.")
+            flash("Failed to send approval email. Check mail configuration.", "error")
     return redirect(url_for('faculty_dashboard'))
 
 @app.route('/reject/<int:leave_id>', methods=['POST'])
 def reject_leave(leave_id):
     if 'role' not in session or session['role'].lower() != 'faculty':
-        flash("You are not authorized to perform this action.")
+        flash("You are not authorized to perform this action.", "error")
         return redirect(url_for('login'))
 
     leave = Leave.query.get(leave_id)
     if leave:
         leave.status = 'Rejected'
         db.session.commit()
-        flash("Leave rejected.")
+        flash("Leave rejected.", "success")
         body = f"Hello {leave.name},\n\nYour leave request for {leave.days} day(s) has been REJECTED.\n\nReason: {leave.reason}\n\nPlease contact faculty for more details."
         if not send_email("Leave Rejected", leave.email, body):
-            flash("Failed to send rejection email. Check mail configuration.")
+            flash("Failed to send rejection email. Check mail configuration.", "error")
     return redirect(url_for('faculty_dashboard'))
 
 # -------- Logout --------
 @app.route('/logout')
 def logout():
     session.clear()
-    flash("You have been logged out successfully.")
+    flash("You have been logged out successfully.", "success")
     return redirect(url_for('login'))
 
 # -------------------- Main --------------------
