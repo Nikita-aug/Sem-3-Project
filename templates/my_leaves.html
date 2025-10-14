@@ -30,7 +30,7 @@
       background: #2c3e50;
       color: #fff;
       text-align: center;
-      padding: 30px 15px; /* increased padding for full visibility */
+      padding: 30px 15px;
       box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
       position: sticky;
       top: 0;
@@ -94,15 +94,15 @@
     }
 
     .approved {
-      background-color: #27ae60; /* green */
+      background-color: #27ae60;
     }
 
     .rejected {
-      background-color: #c0392b; /* red */
+      background-color: #c0392b;
     }
 
     .pending {
-      background-color: #f39c12; /* orange */
+      background-color: #f39c12;
     }
 
     .back-link {
@@ -149,6 +149,9 @@
       <div class="leave-info">
         <span>Days: {{ leave.days }}</span>
         <span>Reason: {{ leave.reason }}</span>
+        {% if leave.approved_by %}
+          <span>Action Taken By: <strong>{{ leave.approved_by }}</strong></span>
+        {% endif %}
       </div>
       <div class="status {% if leave.status == 'Approved' %}approved{% elif leave.status == 'Rejected' %}rejected{% else %}pending{% endif %}">
         {% if leave.status == "Approved" %}

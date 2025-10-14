@@ -35,6 +35,7 @@ class User(db.Model):
     role = db.Column(db.String(50), nullable=False)
     leaves = db.relationship('Leave', backref='user', lazy=True)
 
+
 class Leave(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -44,11 +45,14 @@ class Leave(db.Model):
     reason = db.Column(db.Text, nullable=False)
     document = db.Column(db.String(150), nullable=True)
     status = db.Column(db.String(20), default='Pending')  # Pending, Approved, Rejected
+    approved_by = db.Column(db.String(150), nullable=True)  # 👈 Faculty name who approved/rejected
+
 
 # -------------------- Routes --------------------
 @app.route('/')
 def home():
     return redirect(url_for('login'))
+
 
 # -------- Registration --------
 @app.route('/register', methods=['GET', 'POST'])
@@ -69,6 +73,7 @@ def register():
         flash("Registration successful! Please login.", "success")
         return redirect(url_for('login'))
     return render_template('register.html')
+
 
 # -------- Login --------
 @app.route('/login', methods=['GET', 'POST'])
@@ -95,6 +100,7 @@ def login():
             return redirect(url_for('login'))
     return render_template('login.html')
 
+
 # -------- Forgot Password --------
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
@@ -118,6 +124,7 @@ def forgot_password():
         return redirect(url_for('login'))
 
     return render_template('forgot_password.html')
+
 
 # -------- Student Dashboard --------
 @app.route('/student', methods=['GET', 'POST'])
@@ -152,6 +159,7 @@ def student_dashboard():
 
     return render_template('student_dashboard.html', name=session['name'])
 
+
 # -------- My Leave Status Page --------
 @app.route('/my-leaves')
 def my_leaves():
@@ -161,6 +169,7 @@ def my_leaves():
 
     leaves = Leave.query.filter_by(student_id=session['user_id']).all()
     return render_template('my_leaves.html', name=session['name'], leaves=leaves)
+
 
 # -------- Faculty Dashboard --------
 @app.route('/faculty')
@@ -172,6 +181,7 @@ def faculty_dashboard():
     leaves = Leave.query.all()
     return render_template('faculty_dashboard.html', name=session['name'], leaves=leaves)
 
+
 # -------- Approve/Reject Leave with Email Handling --------
 def send_email(subject, recipient, body):
     try:
@@ -182,6 +192,7 @@ def send_email(subject, recipient, body):
         print("Email sending failed:", e)
         return False
 
+
 @app.route('/approve/<int:leave_id>', methods=['POST'])
 def approve_leave(leave_id):
     if 'role' not in session or session['role'].lower() != 'faculty':
@@ -191,12 +202,16 @@ def approve_leave(leave_id):
     leave = Leave.query.get(leave_id)
     if leave:
         leave.status = 'Approved'
+        leave.approved_by = session['name']  # ✅ Faculty name stored
         db.session.commit()
         flash("Leave approved successfully.", "success")
-        body = f"Hello {leave.name},\n\nYour leave request for {leave.days} day(s) has been APPROVED.\n\nReason: {leave.reason}\n\nThank you."
+
+        body = f"Hello {leave.name},\n\nYour leave request for {leave.days} day(s) has been APPROVED by {leave.approved_by}.\n\nReason: {leave.reason}\n\nThank you."
         if not send_email("Leave Approved", leave.email, body):
             flash("Failed to send approval email. Check mail configuration.", "error")
+
     return redirect(url_for('faculty_dashboard'))
+
 
 @app.route('/reject/<int:leave_id>', methods=['POST'])
 def reject_leave(leave_id):
@@ -207,12 +222,16 @@ def reject_leave(leave_id):
     leave = Leave.query.get(leave_id)
     if leave:
         leave.status = 'Rejected'
+        leave.approved_by = session['name']  # ✅ Faculty name stored
         db.session.commit()
         flash("Leave rejected.", "success")
-        body = f"Hello {leave.name},\n\nYour leave request for {leave.days} day(s) has been REJECTED.\n\nReason: {leave.reason}\n\nPlease contact faculty for more details."
+
+        body = f"Hello {leave.name},\n\nYour leave request for {leave.days} day(s) has been REJECTED by {leave.approved_by}.\n\nReason: {leave.reason}\n\nPlease contact faculty for more details."
         if not send_email("Leave Rejected", leave.email, body):
             flash("Failed to send rejection email. Check mail configuration.", "error")
+
     return redirect(url_for('faculty_dashboard'))
+
 
 # -------- Logout --------
 @app.route('/logout')
@@ -220,6 +239,7 @@ def logout():
     session.clear()
     flash("You have been logged out successfully.", "success")
     return redirect(url_for('login'))
+
 
 # -------------------- Main --------------------
 if __name__ == '__main__':
