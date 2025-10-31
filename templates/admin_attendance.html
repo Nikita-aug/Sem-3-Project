@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Attendance</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #89f7fe, #66a6ff);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      font-size: 1.8em;
+    }
+
+    nav {
+      background: #34495e;
+      text-align: center;
+      padding: 10px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      color: #00d4ff;
+    }
+
+    .container {
+      width: 95%;
+      margin: 40px auto;
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #2980b9;
+      color: white;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .btn {
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin: 10px 0;
+    }
+
+    .btn:hover {
+      background-color: #1b6391;
+    }
+
+    .low-attendance {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>Manage Attendance</header>
+  <nav>
+    <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('admin_leaves') }}">Manage Leaves</a>
+    <a href="{{ url_for('admin_users') }}">Manage Users</a>
+    <a href="{{ url_for('admin_attendance') }}">Attendance</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+  </nav>
+
+  <div class="container">
+    <h2>Student Attendance Records</h2>
+
+    <form action="{{ url_for('download_attendance') }}" method="get">
+      <button type="submit" class="btn">Download PDF Report</button>
+    </form>
+
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Attendance %</th>
+        <th>Status</th>
+      </tr>
+
+      {% for student in students %}
+      {% set attendance = student.attendance|sort(attribute='id', reverse=True)|first %}
+      {% set perc = attendance.percentage if attendance else 0 %}
+      <tr>
+        <td>{{ student.id }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.email }}</td>
+        <td {% if perc < 80 %}class="low-attendance"{% endif %}>{{ perc }}%</td>
+        <td>
+          {% if perc < 80 %}
+            ⚠ Detain
+          {% else %}
+            -
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</body>
+</html>

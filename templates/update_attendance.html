@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Attendance</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(to right, #e3f2fd, #bbdefb); 
+      padding: 40px; 
+    }
+    h2 { 
+      text-align: center; 
+      color: #0d47a1; 
+    }
+    form {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    }
+    label { 
+      font-weight: bold; 
+      color: #333; 
+    }
+    select, input, button { 
+      width: 100%; 
+      margin-top: 10px; 
+      padding: 10px; 
+      border-radius: 6px; 
+      border: 1px solid #ccc; 
+      font-size: 15px;
+    }
+    button { 
+      background: #2ecc71; 
+      color: white; 
+      border: none; 
+      cursor: pointer; 
+      font-size: 16px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    button:hover { background: #27ae60; }
+    .container {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .back-link {
+      color: #0d47a1;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h2>Update Student Attendance</h2>
+
+  <form method="POST">
+    <label for="student_id">Select Student:</label>
+    <select name="student_id" required>
+      <option value="">-- Select Student --</option>
+      {% for student in students %}
+      <option value="{{ student.id }}">{{ student.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="total_days">Total Days:</label>
+    <input type="number" name="total_days" min="1" placeholder="Enter total working days" required>
+
+    <label for="present_days">Present Days:</label>
+    <input type="number" name="present_days" min="0" placeholder="Enter present days" required>
+
+    <button type="submit">Update Attendance</button>
+  </form>
+
+  <div class="container">
+    <a href="{{ url_for('faculty_dashboard') }}" class="back-link">⬅ Back to Faculty Dashboard</a>
+  </div>
+</body>
+</html>

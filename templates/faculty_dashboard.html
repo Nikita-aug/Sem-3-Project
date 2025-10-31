@@ -2,145 +2,205 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Faculty Dashboard</title>
   <style>
-    * { box-sizing: border-box; }
-
     body {
-      font-family: "Segoe UI", Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
       margin: 0;
       padding: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      color: #2c3e50;
-      background: 
-        linear-gradient(rgba(44, 62, 80, 0.6), rgba(52, 152, 219, 0.6)),
-        url("{{ url_for('static', filename='images/faculty-bg.jpg') }}");
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
     }
 
     header {
-      background: rgba(44, 62, 80, 0.9);
-      color: #fff;
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      background: #e74c3c;
+      padding: 8px 15px;
+      border-radius: 5px;
+    }
+
+    .container {
+      padding: 30px;
+    }
+
+    h2 {
       text-align: center;
-      padding: 25px 0;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.3);
-      backdrop-filter: blur(6px);
+      color: #2c3e50;
     }
 
-    header h1 { margin: 0; font-size: 24px; font-weight: 600; }
-    main { flex: 1; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; }
-    h2 { color: #fff; text-align: center; margin-bottom: 20px; font-weight: 600; text-shadow: 0 2px 5px rgba(0,0,0,0.4); }
+    .link-box {
+      text-align: center;
+      margin: 20px 0;
+    }
 
-    .container { width: 100%; max-width: 1000px; overflow-x: auto; margin-bottom: 40px; }
+    .attendance-btn {
+      background: #2ecc71;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .attendance-btn:hover {
+      background: #27ae60;
+    }
+
     table {
-      width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.9);
-      box-shadow: 0px 6px 12px rgba(0,0,0,0.2); border-radius: 10px; overflow: hidden; min-width: 800px;
-      backdrop-filter: blur(4px);
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.15);
     }
 
-    th, td { padding: 12px 15px; text-align: center; border-bottom: 1px solid #ddd; font-size: 14px; }
-    th { background: #3498db; color: #fff; text-transform: uppercase; font-size: 14px; }
-    tr:hover { background: rgba(236, 246, 255, 0.8); }
-
-    .status.approved { color: green; font-weight: bold; }
-    .status.rejected { color: red; font-weight: bold; }
-    .status.pending { color: orange; font-weight: bold; }
-
-    .btn { padding: 6px 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; transition: transform 0.2s ease, background 0.3s ease; }
-    .btn.approve { background: #2ecc71; color: white; }
-    .btn.approve:hover { background: #27ae60; transform: scale(1.05); }
-    .btn.reject { background: #e74c3c; color: white; }
-    .btn.reject:hover { background: #c0392b; transform: scale(1.05); }
-
-    .link-box { text-align: center; margin-bottom: 40px; }
-    .link-box a { text-decoration: none; background: #3498db; color: #fff; padding: 12px 24px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: background 0.3s ease, transform 0.2s ease; }
-    .link-box a:hover { background: #2980b9; transform: scale(1.05); }
-
-    @media (max-width: 700px) {
-      th, td { font-size: 12px; padding: 10px; }
-      header h1 { font-size: 20px; }
-      .btn { font-size: 12px; padding: 5px 10px; }
+    th, td {
+      border: 1px solid #ddd;
+      text-align: center;
+      padding: 12px;
     }
 
-    /* --- Flash Messages --- */
-    .flash-messages { position: fixed; top: 20px; right: 20px; z-index: 1000; }
-    .flash-message { padding: 12px 20px; margin-bottom: 10px; border-radius: 6px; color: #fff; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.1); animation: slideIn 0.5s ease, fadeOut 0.5s ease 3s forwards; }
-    .flash-success { background-color: #4CAF50; }
-    .flash-error { background-color: #f44336; }
-    .flash-info { background-color: #2196F3; }
-    .flash-warning { background-color: #ff9800; }
-    @keyframes slideIn { from {opacity:0; transform: translateX(50px);} to {opacity:1; transform: translateX(0);} }
-    @keyframes fadeOut { to {opacity:0; transform: translateX(50px);} }
+    th {
+      background-color: #34495e;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .status-pending {
+      color: #f39c12;
+      font-weight: bold;
+    }
+
+    .status-approved {
+      color: #27ae60;
+      font-weight: bold;
+    }
+
+    .status-rejected {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+
+    .action-form {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .approve-btn, .reject-btn {
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .approve-btn {
+      background-color: #27ae60;
+    }
+
+    .approve-btn:hover {
+      background-color: #2ecc71;
+      transform: scale(1.05);
+    }
+
+    .reject-btn {
+      background-color: #e74c3c;
+    }
+
+    .reject-btn:hover {
+      background-color: #c0392b;
+      transform: scale(1.05);
+    }
+
   </style>
 </head>
 <body>
   <header>
-    <h1>Faculty Dashboard - Leave Requests</h1>
+    <h1>Welcome, {{ faculty_name }} 👩‍🏫</h1>
+    <a href="{{ url_for('logout') }}">Logout</a>
   </header>
 
-  <!-- Flash messages -->
-  <div class="flash-messages">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash-message flash-{{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-  </div>
-
-  <main>
-    <h2>Welcome, {{ faculty_name }}</h2>
-
-    <div class="container">
-      <table>
-        <tr>
-          <th>ID</th>
-          <th>Student Name</th>
-          <th>Email</th>
-          <th>Days</th>
-          <th>Reason</th>
-          <th>Document</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-
-        {% for leave in leaves %}
-        <tr>
-          <td>{{ leave.id }}</td>
-          <td>{{ leave.name }}</td>
-          <td>{{ leave.email }}</td>
-          <td>{{ leave.days }}</td>
-          <td>{{ leave.reason }}</td>
-          <td>
-            {% if leave.document %}
-              <a href="{{ url_for('static', filename='uploads/' ~ leave.document) }}" target="_blank">View</a>
-            {% else %}
-              None
-            {% endif %}
-          </td>
-          <td class="status {{ leave.status|lower }}">{{ leave.status }}</td>
-          <td>
-            <form method="POST" action="/approve/{{ leave.id }}" style="display:inline;" onsubmit="return confirm('Approve this leave?');">
-              <button class="btn approve">Approve</button>
-            </form>
-            <form method="POST" action="/reject/{{ leave.id }}" style="display:inline;" onsubmit="return confirm('Reject this leave?');">
-              <button class="btn reject">Reject</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </table>
-    </div>
+  <div class="container">
+    <h2>Faculty Dashboard</h2>
 
     <div class="link-box">
-      <a href="{{ url_for('logout') }}">⬅ Logout</a>
+      <a href="{{ url_for('update_attendance') }}" class="attendance-btn">📊 Update Attendance</a>
     </div>
-  </main>
+
+    <h3 style="text-align:center;">Student Leave Applications</h3>
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Student Name</th>
+        <th>Email</th>
+        <th>Days</th>
+        <th>Reason</th>
+        <th>Document</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+
+      {% for leave in leaves %}
+      <tr>
+        <td>{{ leave.id }}</td>
+        <td>{{ leave.name }}</td>
+        <td>{{ leave.email }}</td>
+        <td>{{ leave.days }}</td>
+        <td>{{ leave.reason }}</td>
+        <td>
+          {% if leave.document %}
+          <a href="{{ url_for('static', filename='uploads/' ~ leave.document) }}" target="_blank">View</a>
+          {% else %}
+          None
+          {% endif %}
+        </td>
+        <td>
+          {% if leave.status == 'Pending' %}
+            <span class="status-pending">{{ leave.status }}</span>
+          {% elif leave.status == 'Approved' %}
+            <span class="status-approved">{{ leave.status }}</span>
+          {% else %}
+            <span class="status-rejected">{{ leave.status }}</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if leave.status == 'Pending' %}
+          <form method="POST" class="action-form">
+            <input type="hidden" name="leave_id" value="{{ leave.id }}">
+            <button type="submit" name="leave_action" value="approve" class="approve-btn">Approve</button>
+            <button type="submit" name="leave_action" value="reject" class="reject-btn">Reject</button>
+          </form>
+          {% else %}
+            <em>N/A</em>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
 </body>
 </html>

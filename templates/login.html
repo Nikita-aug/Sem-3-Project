@@ -33,8 +33,21 @@
       position: relative;
     }
 
-    h1 { color: var(--accent); text-align: center; font-weight: 700; font-size: 1.8rem; margin-bottom: 15px; }
-    .accent-line { width: 64px; height: 4px; border-radius: 4px; margin: 10px auto 25px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+    h1 {
+      color: var(--accent);
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+    }
+
+    .accent-line {
+      width: 64px;
+      height: 4px;
+      border-radius: 4px;
+      margin: 10px auto 25px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
 
     form {
       background-color: rgba(255, 255, 255, 0.95);
@@ -54,25 +67,39 @@
     h2 { text-align: center; color: #333; margin-bottom: 20px; font-size: 1.3rem; }
     label { font-weight: 600; color: #233646; font-size: 0.95rem; }
 
-    select, input[type="email"], input[type="password"] {
+    input[type="email"], input[type="password"] {
       width: 100%; padding: 10px 12px; margin-bottom: 14px;
       border-radius: 6px; border: 1px solid #d6dde6;
-      background: linear-gradient(180deg, #fff, #fbfdff); font-size: 0.95rem;
-      outline: none; transition: border-color var(--transition), box-shadow var(--transition);
+      background: linear-gradient(180deg, #fff, #fbfdff);
+      font-size: 0.95rem; outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
     }
 
-    select:focus, input:focus { border-color: var(--accent-2); box-shadow: 0 8px 20px rgba(33, 150, 243, 0.08); }
+    input:focus {
+      border-color: var(--accent-2);
+      box-shadow: 0 8px 20px rgba(33, 150, 243, 0.08);
+    }
 
     .forgot { text-align: right; margin-bottom: 20px; }
     .forgot a { color: var(--accent); font-size: 0.9rem; font-weight: 600; text-decoration: none; }
     .forgot a:hover { color: var(--accent-2); text-decoration: underline; }
 
     button[type="submit"] {
-      width: 100%; padding: 10px; background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer;
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
       transition: transform var(--transition), box-shadow var(--transition);
     }
-    button[type="submit"]:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(13, 71, 161, 0.16); }
+
+    button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(13, 71, 161, 0.16);
+    }
 
     .small { text-align: center; margin-top: 14px; font-size: 0.95rem; }
     .small a { color: var(--accent-2); font-weight: 700; text-decoration: none; }
@@ -80,25 +107,39 @@
 
     /* --- Flash Messages --- */
     .flash-messages {
-      position: fixed; top: 20px; right: 20px; z-index: 1000;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
     }
+
     .flash-message {
-      padding: 12px 20px; margin-bottom: 10px; border-radius: 6px;
-      color: #fff; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 12px 20px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       animation: slideIn 0.5s ease, fadeOut 0.5s ease 3s forwards;
     }
+
     .flash-success { background-color: #4CAF50; }
     .flash-error { background-color: #f44336; }
     .flash-info { background-color: #2196F3; }
     .flash-warning { background-color: #ff9800; }
 
-    @keyframes slideIn { from {opacity:0; transform: translateX(50px);} to {opacity:1; transform: translateX(0);} }
-    @keyframes fadeOut { to {opacity:0; transform: translateX(50px);} }
+    @keyframes slideIn {
+      from {opacity:0; transform: translateX(50px);}
+      to {opacity:1; transform: translateX(0);}
+    }
 
+    @keyframes fadeOut {
+      to {opacity:0; transform: translateX(50px);}
+    }
   </style>
 </head>
 <body>
-  <h1>Online Leave Application for Student</h1>
+  <h1>Online Leave Application System</h1>
   <div class="accent-line"></div>
 
   <!-- Flash messages -->
@@ -115,12 +156,6 @@
   <form method="POST" action="/login">
     <h2>Login</h2>
 
-    <label>Role:</label>
-    <select name="role" required>
-      <option value="student">Student</option>
-      <option value="faculty">Faculty</option>
-    </select>
-
     <label>Email:</label>
     <input type="email" name="email" required placeholder="you@college.edu" />
 
@@ -134,7 +169,8 @@
     <button type="submit">Login</button>
 
     <div class="small">
-      <a href="/register">Don't have an account? Register here</a>
+      <!-- Registration removed: show contact admin -->
+      <span>Don't have an account? Contact the admin to create one.</span>
     </div>
   </form>
 </body>

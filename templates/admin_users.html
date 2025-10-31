@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Users</title>
+  <style>
+    body { font-family:'Segoe UI',sans-serif; background:linear-gradient(to right,#89f7fe,#66a6ff); margin:0; padding:0; }
+    header { background:#2c3e50; color:#fff; padding:15px 0; text-align:center; font-size:1.8em; }
+    nav { background:#34495e; text-align:center; padding:8px; }
+    nav a { color:white; text-decoration:none; margin:0 10px; font-weight:bold; }
+    .summary { display:flex; justify-content:space-around; margin:20px auto; max-width:600px; text-align:center; }
+    .summary div { background:white; padding:12px 18px; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1); flex:1; margin:0 5px; font-weight:bold; color:#2c3e50; }
+    .container { width:95%; margin:20px auto; background:white; border-radius:12px; padding:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+    form { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+    form input, form select { padding:8px; border-radius:6px; border:1px solid #ccc; font-size:13px; flex:1; min-width:140px; }
+    form button { padding:8px 12px; border-radius:6px; border:none; background:#2980b9; color:#fff; cursor:pointer; }
+    table { width:100%; border-collapse:collapse; font-size:13px; margin-top:8px; }
+    th, td { padding:8px; border-bottom:1px solid #ddd; text-align:center; }
+    th { background:#2980b9; color:#fff; }
+    .delete-btn { background:#c0392b; color:#fff; padding:6px 10px; border-radius:6px; border:none; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <header>Admin: Manage Users</header>
+  <nav>
+    <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('admin_leaves') }}">Manage Leaves</a>
+    <a href="{{ url_for('admin_users') }}">Manage Users</a>
+    <a href="{{ url_for('admin_attendance') }}">Attendance</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+  </nav>
+
+  <div class="summary">
+    <div>Total Students: {{ total_students }}</div>
+    <div>Total Faculty: {{ total_faculty }}</div>
+    <div>Total Leaves: {{ total_leaves }}</div>
+  </div>
+
+  <div class="container">
+    <h2 style="text-align:center;">Add New User</h2>
+    <form method="POST" action="{{ url_for('admin_users') }}">
+      <input type="hidden" name="action" value="add">
+      <input type="text" name="name" placeholder="Full Name" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <select name="role" required>
+        <option value="">Select Role</option>
+        <option value="student">Student</option>
+        <option value="faculty">Faculty</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button type="submit">Add</button>
+    </form>
+
+    <h2 style="text-align:center;">Registered Users</h2>
+    <table>
+      <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Action</th></tr>
+      {% for user in users %}
+      <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+          <form method="POST" style="display:inline;" action="{{ url_for('admin_users') }}" onsubmit="return confirm('Delete this user?');">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <button type="submit" class="delete-btn">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</body>
+</html>

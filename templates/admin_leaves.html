@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Leaves & Attendance</title>
+  <style>
+    body { font-family:'Segoe UI',sans-serif; background:linear-gradient(to right,#89f7fe,#66a6ff); margin:0; padding:0; }
+    header{background:#2c3e50;color:#fff;padding:15px 0;text-align:center;font-size:1.8em;}
+    nav{background:#34495e;text-align:center;padding:10px;}
+    nav a{color:white;text-decoration:none;margin:0 15px;font-weight:bold;}
+    .container{width:95%;margin:20px auto;background:white;border-radius:12px;padding:15px;box-shadow:0 4px 8px rgba(0,0,0,0.1);margin-bottom:20px;}
+    table{width:100%;border-collapse:collapse;font-size:13px;}
+    th,td{padding:8px;border-bottom:1px solid #ddd;text-align:center;}
+    th{background:#2980b9;color:#fff;}
+    tr:hover{background:#f1f1f1;}
+    .low-attendance{color:#c0392b;font-weight:bold;}
+  </style>
+</head>
+<body>
+  <header>Admin: Manage Leaves & Attendance</header>
+  <nav>
+    <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('admin_leaves') }}">Manage Leaves</a>
+    <a href="{{ url_for('admin_users') }}">Manage Users</a>
+    <a href="{{ url_for('admin_attendance') }}">Attendance</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+  </nav>
+
+  <div class="container">
+    <h2 style="text-align:center;">All Leave Applications</h2>
+    <table>
+      <tr><th>ID</th><th>Student Name</th><th>Email</th><th>Days</th><th>Reason</th><th>Document</th><th>Status</th><th>Approved By</th><th>Action</th></tr>
+      {% for leave in leaves %}
+      <tr>
+        <td>{{ leave.id }}</td>
+        <td>{{ leave.name }}</td>
+        <td>{{ leave.email }}</td>
+        <td>{{ leave.days }}</td>
+        <td style="max-width:220px;word-wrap:break-word;">{{ leave.reason }}</td>
+        <td>{% if leave.document %}<a href="{{ url_for('static', filename='uploads/' + leave.document) }}" target="_blank">View</a>{% else %}-{% endif %}</td>
+        <td>{{ leave.status }}</td>
+        <td>{{ leave.approved_by or '-' }}</td>
+        <td>
+          {% if leave.status == 'Pending' %}
+          <form method="POST" style="display:inline;" action="{{ url_for('admin_leaves') }}">
+            <input type="hidden" name="leave_id" value="{{ leave.id }}">
+            <input type="hidden" name="action" value="approve">
+            <button type="submit">Approve</button>
+          </form>
+          <form method="POST" style="display:inline;" action="{{ url_for('admin_leaves') }}">
+            <input type="hidden" name="leave_id" value="{{ leave.id }}">
+            <input type="hidden" name="action" value="reject">
+            <button type="submit">Reject</button>
+          </form>
+          {% else %}
+            -
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="container">
+    <h2 style="text-align:center;">Student Attendance Snapshot</h2>
+    <table>
+      <tr><th>ID</th><th>Student Name</th><th>Email</th><th>Lecture Attended</th><th>Attendance %</th><th>Status</th></tr>
+      {% for student in students %}
+      <tr>
+        <td>{{ student.id }}</td>
+        <td>{{ student.name }}</td>
+        <td>{{ student.email }}</td>
+        <td>{{ student.lectures_attended }}</td>
+        <td {% if student.percentage < 80 %}class="low-attendance"{% endif %}>{{ student.percentage }}%</td>
+        <td>{% if student.percentage < 80 %}<span class="low-attendance">Below 80%</span>{% else %}Normal{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</body>
+</html>
