@@ -37,12 +37,17 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     role = db.Column(db.String(50), nullable=False)
-    leaves = db.relationship('Leave', backref='user', lazy=True)
-    attendance = db.relationship('Attendance', backref='student', lazy=True)
+
+    # relationships: add cascade so related rows are removed when a user is deleted
+    leaves = db.relationship('Leave', backref='user', lazy=True,
+                             cascade='all, delete-orphan', passive_deletes=True)
+    attendance = db.relationship('Attendance', backref='student', lazy=True,
+                                 cascade='all, delete-orphan', passive_deletes=True)
 
 class Leave(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # use ondelete='CASCADE' for safety with DBs that enforce it
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     name = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), nullable=False)
     days = db.Column(db.Integer, nullable=False)
@@ -53,7 +58,7 @@ class Leave(db.Model):
 
 class Attendance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     percentage = db.Column(db.Float, nullable=False)
     updated_by = db.Column(db.String(150), nullable=False)
     updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -345,9 +350,16 @@ def admin_users():
                 if user.id == session.get('user_id'):
                     flash("You cannot delete your own admin account.", "error")
                 else:
-                    db.session.delete(user)
-                    db.session.commit()
-                    flash("User deleted successfully.", "success")
+                    try:
+                        # delete dependent rows first to avoid NOT NULL constraint errors in SQLite
+                        Leave.query.filter_by(student_id=user.id).delete()
+                        Attendance.query.filter_by(student_id=user.id).delete()
+                        db.session.delete(user)
+                        db.session.commit()
+                        flash("User deleted successfully.", "success")
+                    except Exception as e:
+                        db.session.rollback()
+                        flash(f"Error deleting user: {str(e)}", "error")
             return redirect(url_for('admin_users'))
 
     # GET render
