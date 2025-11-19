@@ -1,0 +1,4 @@
+id,name,email,role,password_hash
+1,Default Admin,admin@college.edu,admin,pbkdf2:sha256:1000000$YNTLha53pmObfiWQ$c01e8ef6ef6a4b3364cef70a2ded7a84102525be8807db32bb4de257038d11f8
+2,Amey Sangpal,ameysangpal110@gmail.com,student,pbkdf2:sha256:1000000$klVCPrCABUXB6zEu$029758ab86767da3c7e99e965afa249b6fd134a3a4cff401fafb724645168e5c
+3,DS1 Faculty,faculty12@gmail.com,faculty,pbkdf2:sha256:1000000$QwM38bjcwR0MZ46W$1f16cb30ff0d6747d167d8d53585b9675b488b8ce14e410ac60cd0962b954c62

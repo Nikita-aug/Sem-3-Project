@@ -14,6 +14,9 @@
     th{background:#2980b9;color:#fff;}
     tr:hover{background:#f1f1f1;}
     .low-attendance{color:#c0392b;font-weight:bold;}
+    .action-row { display:flex; justify-content:center; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+    .btn { background:#2980b9; color:#fff; padding:10px 16px; border:none; border-radius:8px; text-decoration:none; font-weight:bold; cursor:pointer; }
+    .btn:hover { background:#1b6391; }
   </style>
 </head>
 <body>
@@ -22,12 +25,22 @@
     <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
     <a href="{{ url_for('admin_leaves') }}">Manage Leaves</a>
     <a href="{{ url_for('admin_users') }}">Manage Users</a>
-    <a href="{{ url_for('admin_attendance') }}">Attendance</a>
+    <!-- Attendance link removed -->
     <a href="{{ url_for('logout') }}">Logout</a>
   </nav>
 
   <div class="container">
     <h2 style="text-align:center;">All Leave Applications</h2>
+
+    <div class="action-row">
+      <!-- Download latest attendance PDF for all students -->
+      <a class="btn" href="{{ url_for('download_attendance_all') }}">⬇ Download Attendance PDF</a>
+
+      <!-- Export all accounts (name, email, role, password_hash) as PDF -->
+      <a class="btn" href="{{ url_for('export_users') }}">⬇ Export Accounts PDF</a>
+      <!-- Reset & Export New Passwords button removed -->
+    </div>
+
     <table>
       <tr><th>ID</th><th>Student Name</th><th>Email</th><th>Days</th><th>Reason</th><th>Document</th><th>Status</th><th>Approved By</th><th>Action</th></tr>
       {% for leave in leaves %}
